@@ -274,19 +274,38 @@ void CGameFramework::FrameAdvance()
 		}
 	}
 
-	// 2. 메뉴 → Level-1 전환
-	if (dynamic_cast<CSceneMenu*>(m_pScene) != nullptr)
-	{
-		CSceneMenu* pMenu = static_cast<CSceneMenu*>(m_pScene);
-		if (pMenu->IsStartSelected())
-		{
-			m_pScene->ReleaseObjects();
-			delete m_pScene;
-			m_pScene = new CSceneStage1(m_pPlayer); // Level-1 씬으로 전환
-			m_pScene->BuildObjects();
-		}
-	}
 
+        // 2. 메뉴 선택 처리
+        if (dynamic_cast<CSceneMenu*>(m_pScene) != nullptr)
+        {
+                CSceneMenu* pMenu = static_cast<CSceneMenu*>(m_pScene);
+                if (pMenu->IsTutorialSelected())
+                {
+                        m_pScene->ReleaseObjects();
+                        delete m_pScene;
+                        m_pScene = new CScene(m_pPlayer); // Tutorial scene
+                        m_pScene->BuildObjects();
+                }
+                else if (pMenu->IsLevel1Selected() || pMenu->IsStartSelected())
+                {
+                        m_pScene->ReleaseObjects();
+                        delete m_pScene;
+                        m_pScene = new CSceneStage1(m_pPlayer);
+                        m_pScene->BuildObjects();
+                }
+                else if (pMenu->IsLevel2Selected())
+                {
+                        m_pScene->ReleaseObjects();
+                        delete m_pScene;
+                        m_pScene = new CSceneStage2(m_pPlayer);
+                        m_pScene->BuildObjects();
+                }
+                else if (pMenu->IsEndSelected())
+                {
+                        DestroyWindow(m_hWnd);
+                        return;
+                }
+        }
 	// 3. Level-1 → Level-2 전환
         if (dynamic_cast<CSceneStage1*>(m_pScene) != nullptr)
         {
