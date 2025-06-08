@@ -5,6 +5,8 @@
 class CSceneMenu : public CScene
 {
 public:
+    enum MENU_ITEMS { MENU_TUTORIAL = 0, MENU_LEVEL1, MENU_LEVEL2, MENU_START, MENU_END, MENU_COUNT };
+
     CSceneMenu(CPlayer* pPlayer);
     virtual ~CSceneMenu();
 
@@ -16,5 +18,7 @@ public:
     bool IsStartSelected() const { return m_bStartSelected; }
 
 private:
-    bool m_bStartSelected = false;
+    bool  m_bStartSelected = false;
+    RECT  m_rcMenuItems[MENU_COUNT];
+    int   m_nCurrentSelection = MENU_TUTORIAL;
 };
