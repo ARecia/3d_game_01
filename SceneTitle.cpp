@@ -52,7 +52,7 @@ void CSceneTitle::Render(HDC hDCFrameBuffer, CCamera* pCamera)
     int offset = (int)(20 * sinf(XMConvertToRadians(m_fRotationAngle)));
 
     TextOut(hDCFrameBuffer, xMid - 120, yMid - 80 + offset,
-        _T("3D 게임 프로그래밍"), lstrlen(_T("3D 게임 프로그래밍")));
+        _T("3D 게임프로그래밍 1."), lstrlen(_T("3D 게임프로그래밍 1.")));
 
     // 폭발이 아직 안 된 경우만 "김윤구" 출력
     if (!m_bExploded)
