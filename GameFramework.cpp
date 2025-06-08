@@ -124,30 +124,17 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 
 void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
-	if (m_pScene) m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+        if (nMessageID == WM_KEYDOWN)
+        {
+                if (wParam == VK_CONTROL)
+                {
+                        ((CAirplanePlayer*)m_pPlayer)->FireBullet(m_pLockedObject);
+                        m_pLockedObject = NULL;
+                }
+        }
 
-	switch (nMessageID)
-	{
-	case WM_KEYDOWN:
-		switch (wParam)
-		{
-		case VK_ESCAPE:
-			::PostQuitMessage(0);
-			break;
-		case VK_RETURN:
-			break;
-		case VK_CONTROL:
-			((CAirplanePlayer*)m_pPlayer)->FireBullet(m_pLockedObject);
-			m_pLockedObject = NULL;
-			break;
-		default:
-			m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
-			break;
-		}
-		break;
-	default:
-		break;
-	}
+        if (m_pScene)
+                m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 }
 
 LRESULT CALLBACK CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
