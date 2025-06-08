@@ -12,12 +12,11 @@ CSceneStage1::CSceneStage1(CPlayer* pPlayer) : CScene(pPlayer)
 
 CSceneStage1::~CSceneStage1()
 {
-    if (m_pAirplane) delete m_pAirplane;
 }
 
 void CSceneStage1::BuildObjects()
 {
-    OutputDebugString(L"[DEBUG] CSceneStage1::BuildObjects ½ÃÀÛµÊ\n");
+    OutputDebugString(L"[DEBUG] CSceneStage1::BuildObjects ì‹œìž‘ë¨\n");
 
     m_pAirplane = new CAirplanePlayer();
     m_pAirplane->SetPosition(0.0f, 0.0f, 0.0f);
@@ -28,14 +27,14 @@ void CSceneStage1::BuildObjects()
     }
     else
     {
-        OutputDebugString(L"[ERROR] m_pPlayer ¶Ç´Â GetCamera()°¡ nullÀÔ´Ï´Ù!\n");
+        OutputDebugString(L"[ERROR] m_pPlayer ë˜ëŠ” GetCamera()ê°€ nullìž…ë‹ˆë‹¤!\n");
     }
 
     m_nObjects = 1;
     m_ppObjects = new CGameObject * [m_nObjects];
     m_ppObjects[0] = m_pAirplane;
 
-    OutputDebugString(L"[DEBUG] CSceneStage1::BuildObjects ¿Ï·áµÊ\n");
+    OutputDebugString(L"[DEBUG] CSceneStage1::BuildObjects ì™„ë£Œë¨\n");
 }
 
 
@@ -44,10 +43,10 @@ void CSceneStage1::Animate(float fElapsedTime)
 {
     if (m_pAirplane)
     {
-        m_pAirplane->Move(0.0f, 0.0f, 20.0f * fElapsedTime);  // Á÷Áø
+        m_pAirplane->Move(0.0f, 0.0f, 20.0f * fElapsedTime);  // ì§ì§„
         m_pAirplane->Animate(fElapsedTime);
 
-        // µµÂø Á¶°Ç
+        // ë„ì°© ì¡°ê±´
         if (m_pAirplane->GetPosition().z >= 500.0f)
         {
             m_bFinished = true;
