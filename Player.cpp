@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Player.h"
+#include "GameFramework.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -169,9 +170,25 @@ void CAirplanePlayer::OnUpdateTransform()
 
 void CAirplanePlayer::Render(HDC hDCFrameBuffer, CCamera* pCamera)
 {
-	CPlayer::Render(hDCFrameBuffer, pCamera);
+        CPlayer::Render(hDCFrameBuffer, pCamera);
 
-	for (int i = 0; i < BULLETS; i++) if (m_ppBullets[i]->m_bActive) m_ppBullets[i]->Render(hDCFrameBuffer, pCamera);
+        for (int i = 0; i < BULLETS; i++) if (m_ppBullets[i]->m_bActive) m_ppBullets[i]->Render(hDCFrameBuffer, pCamera);
+
+        if (gGameFramework.IsShieldActive())
+        {
+                CGraphicsPipeline::SetWorldTransform(&m_xmf4x4World);
+                XMFLOAT3 xmf3Screen = CGraphicsPipeline::Project(XMFLOAT3(0.0f, 0.0f, 0.0f));
+                xmf3Screen = CGraphicsPipeline::ScreenTransform(xmf3Screen);
+
+                int nRadius = 20;
+                HPEN hPen = ::CreatePen(PS_SOLID, 2, RGB(0, 255, 255));
+                HBRUSH hOldBrush = (HBRUSH)::SelectObject(hDCFrameBuffer, ::GetStockObject(NULL_BRUSH));
+                HPEN hOldPen = (HPEN)::SelectObject(hDCFrameBuffer, hPen);
+                ::Ellipse(hDCFrameBuffer, (int)(xmf3Screen.x - nRadius), (int)(xmf3Screen.y - nRadius), (int)(xmf3Screen.x + nRadius), (int)(xmf3Screen.y + nRadius));
+                ::SelectObject(hDCFrameBuffer, hOldPen);
+                ::SelectObject(hDCFrameBuffer, hOldBrush);
+                ::DeleteObject(hPen);
+        }
 }
 
 void CAirplanePlayer::FireBullet(CGameObject* pLockedObject)
