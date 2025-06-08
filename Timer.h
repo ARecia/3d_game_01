@@ -22,7 +22,7 @@ public:
 
 private:
 	double							m_fTimeScale;						
-	float							m_fTimeElapsed;		
+	float							m_fTimeElapsed = 0.0f;		
 
 	__int64							m_nBasePerformanceCounter;
 	__int64							m_nPausedPerformanceCounter;
@@ -39,5 +39,5 @@ private:
 	unsigned long					m_FramePerSecond;					
 	float							m_fFPSTimeElapsed;		
 
-	bool							m_bStopped;
+	bool							m_bStopped = false;
 };

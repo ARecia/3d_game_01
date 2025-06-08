@@ -15,10 +15,13 @@ CGameTimer::CGameTimer()
 	m_nPausedPerformanceCounter = 0;
 	m_nStopPerformanceCounter = 0;
 
-	m_nSampleCount = 0;
-	m_nCurrentFrameRate = 0;
-	m_FramePerSecond = 0;
-	m_fFPSTimeElapsed = 0.0f;
+        m_nSampleCount = 0;
+        m_nCurrentFrameRate = 0;
+        m_FramePerSecond = 0;
+        m_fFPSTimeElapsed = 0.0f;
+
+        m_fTimeElapsed = 0.0f;
+        m_bStopped = false;
 }
 
 CGameTimer::~CGameTimer()
