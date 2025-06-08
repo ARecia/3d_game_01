@@ -12,12 +12,12 @@ CSceneMenu::~CSceneMenu()
 
 void CSceneMenu::BuildObjects()
 {
-    // ¸Ş´º´Â ÅØ½ºÆ®¸¸ Ãâ·Â
+    // ë©”ë‰´ëŠ” í…ìŠ¤íŠ¸ë§Œ ì¶œë ¥
 }
 
 void CSceneMenu::Animate(float fElapsedTime)
 {
-    // ¸Ş´º´Â Á¤ÀûÀÌ¹Ç·Î ¾Ö´Ï¸ŞÀÌ¼Ç ¾øÀ½
+    // ë©”ë‰´ëŠ” ì •ì ì´ë¯€ë¡œ ì• ë‹ˆë©”ì´ì…˜ ì—†ìŒ
 }
 
 void CSceneMenu::Render(HDC hDCFrameBuffer, CCamera* pCamera)
@@ -27,17 +27,37 @@ void CSceneMenu::Render(HDC hDCFrameBuffer, CCamera* pCamera)
 
     HFONT hFont = CreateFont(32, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
         HANGEUL_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
-        DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, _T("¸¼Àº °íµñ"));
-    HFONT hOldFont = (HFONT)SelectObject(hDCFrameBuffer, hFont);
+        int baseY = FRAMEBUFFER_HEIGHT / 2 - 100;
 
-    int x = FRAMEBUFFER_WIDTH / 2 - 80;
-    int y = FRAMEBUFFER_HEIGHT / 2 - 100;
+        RECT tutorialRect = { textX, baseY + 0,   textX + 160, baseY + 40 };
+        RECT level1Rect  = { textX, baseY + 50,  textX + 160, baseY + 90 };
+        RECT level2Rect  = { textX, baseY + 100, textX + 160, baseY + 140 };
+        RECT startRect   = { textX, baseY + 150, textX + 160, baseY + 190 };
+        RECT endRect     = { textX, baseY + 200, textX + 160, baseY + 240 };
+        POINT pt{ clickX, clickY };
 
-    TextOut(hDCFrameBuffer, x, y + 0, _T("Tutorial"), lstrlen(_T("Tutorial")));
-    TextOut(hDCFrameBuffer, x, y + 50, _T("Level-1"), lstrlen(_T("Level-1")));
-    TextOut(hDCFrameBuffer, x, y + 100, _T("Level-2"), lstrlen(_T("Level-2")));
-    TextOut(hDCFrameBuffer, x, y + 150, _T("Start"), lstrlen(_T("Start")));   // ¡ç ÀÌ ÁÂÇ¥¿Í
-    TextOut(hDCFrameBuffer, x, y + 200, _T("End"), lstrlen(_T("End")));
+        if (PtInRect(&tutorialRect, pt))
+        {
+            OutputDebugString(L"[Menu] Tutorial click\n");
+            m_bTutorialSelected = true;
+        }
+        else if (PtInRect(&level1Rect, pt))
+        {
+            OutputDebugString(L"[Menu] Level-1 click\n");
+            m_bLevel1Selected = true;
+        }
+        else if (PtInRect(&level2Rect, pt))
+            OutputDebugString(L"[Menu] Level-2 click\n");
+            m_bLevel2Selected = true;
+        }
+        else if (PtInRect(&startRect, pt))
+        {
+            OutputDebugString(L"[Menu] Start click\n");
+        else if (PtInRect(&endRect, pt))
+        {
+            OutputDebugString(L"[Menu] End click\n");
+            m_bEndSelected = true;
+        }
 
     SelectObject(hDCFrameBuffer, hOldFont);
     DeleteObject(hFont);
@@ -51,20 +71,20 @@ void CSceneMenu::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wPa
         int clickX = LOWORD(lParam);
         int clickY = HIWORD(lParam);
 
-        // ÅØ½ºÆ® À§Ä¡¿Í µ¿ÀÏÇÑ ±âÁØ »ç¿ë
+        // í…ìŠ¤íŠ¸ ìœ„ì¹˜ì™€ ë™ì¼í•œ ê¸°ì¤€ ì‚¬ìš©
         int textX = FRAMEBUFFER_WIDTH / 2 - 80;
-        int textY = FRAMEBUFFER_HEIGHT / 2 - 100 + 150; // "Start"°¡ y+150¿¡ ÀÖÀ½
+        int textY = FRAMEBUFFER_HEIGHT / 2 - 100 + 150; // "Start"ê°€ y+150ì— ìˆìŒ
 
         RECT startRect = {
-            textX,             // x ½ÃÀÛ
-            textY,             // y ½ÃÀÛ
-            textX + 160,       // x ³¡ (ÅØ½ºÆ® Æø °í·Á)
-            textY + 40         // y ³¡ (ÅØ½ºÆ® ³ôÀÌ °í·Á)
+            textX,             // x ì‹œì‘
+            textY,             // y ì‹œì‘
+            textX + 160,       // x ë (í…ìŠ¤íŠ¸ í­ ê³ ë ¤)
+            textY + 40         // y ë (í…ìŠ¤íŠ¸ ë†’ì´ ê³ ë ¤)
         };
 
         if (PtInRect(&startRect, POINT{ clickX, clickY }))
         {
-            OutputDebugString(L"[¸Ş´º] Start ¹öÆ° Å¬¸¯µÊ\n");
+            OutputDebugString(L"[ë©”ë‰´] Start ë²„íŠ¼ í´ë¦­ë¨\n");
             m_bStartSelected = true;
         }
     }
