@@ -473,3 +473,50 @@ void CAxisMesh::Render(HDC hDCFrameBuffer)
 	::SelectObject(hDCFrameBuffer, hOldPen);
 	::DeleteObject(hPen);
 }
+
+CRollerCoasterMesh::CRollerCoasterMesh(XMFLOAT3* pPathPoints, int nPoints, float fWidth)
+        : CMesh(((nPoints - 1) * 2) + nPoints)
+{
+        float fHalfWidth = fWidth * 0.5f;
+        int k = 0;
+
+        for (int i = 0; i < nPoints - 1; i++)
+        {
+                CPolygon* pLeft = new CPolygon(2);
+                pLeft->SetVertex(0, CVertex(pPathPoints[i].x - fHalfWidth, pPathPoints[i].y, pPathPoints[i].z));
+                pLeft->SetVertex(1, CVertex(pPathPoints[i + 1].x - fHalfWidth, pPathPoints[i + 1].y, pPathPoints[i + 1].z));
+                SetPolygon(k++, pLeft);
+        }
+
+        for (int i = 0; i < nPoints - 1; i++)
+        {
+                CPolygon* pRight = new CPolygon(2);
+                pRight->SetVertex(0, CVertex(pPathPoints[i].x + fHalfWidth, pPathPoints[i].y, pPathPoints[i].z));
+                pRight->SetVertex(1, CVertex(pPathPoints[i + 1].x + fHalfWidth, pPathPoints[i + 1].y, pPathPoints[i + 1].z));
+                SetPolygon(k++, pRight);
+        }
+
+        for (int i = 0; i < nPoints; i++)
+        {
+                CPolygon* pCross = new CPolygon(2);
+                pCross->SetVertex(0, CVertex(pPathPoints[i].x - fHalfWidth, pPathPoints[i].y, pPathPoints[i].z));
+                pCross->SetVertex(1, CVertex(pPathPoints[i].x + fHalfWidth, pPathPoints[i].y, pPathPoints[i].z));
+                SetPolygon(k++, pCross);
+        }
+
+        XMFLOAT3 vMin = pPathPoints[0];
+        XMFLOAT3 vMax = pPathPoints[0];
+        for (int i = 1; i < nPoints; i++)
+        {
+                if (pPathPoints[i].x < vMin.x) vMin.x = pPathPoints[i].x;
+                if (pPathPoints[i].y < vMin.y) vMin.y = pPathPoints[i].y;
+                if (pPathPoints[i].z < vMin.z) vMin.z = pPathPoints[i].z;
+                if (pPathPoints[i].x > vMax.x) vMax.x = pPathPoints[i].x;
+                if (pPathPoints[i].y > vMax.y) vMax.y = pPathPoints[i].y;
+                if (pPathPoints[i].z > vMax.z) vMax.z = pPathPoints[i].z;
+        }
+        vMin.x -= fHalfWidth; vMax.x += fHalfWidth;
+        XMFLOAT3 center((vMin.x + vMax.x) * 0.5f, (vMin.y + vMax.y) * 0.5f, (vMin.z + vMax.z) * 0.5f);
+        XMFLOAT3 extents((vMax.x - vMin.x) * 0.5f, (vMax.y - vMin.y) * 0.5f, (vMax.z - vMin.z) * 0.5f);
+        m_xmOOBB = BoundingOrientedBox(center, extents, XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+}

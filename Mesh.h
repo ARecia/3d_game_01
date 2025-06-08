@@ -81,8 +81,15 @@ public:
 class CAxisMesh : public CMesh
 {
 public:
-	CAxisMesh(float fWidth = 4.0f, float fHeight = 4.0f, float fDepth = 4.0f);
-	virtual ~CAxisMesh() { }
+        CAxisMesh(float fWidth = 4.0f, float fHeight = 4.0f, float fDepth = 4.0f);
+        virtual ~CAxisMesh() { }
 
-	virtual void Render(HDC hDCFrameBuffer);
+        virtual void Render(HDC hDCFrameBuffer);
+};
+
+class CRollerCoasterMesh : public CMesh
+{
+public:
+        CRollerCoasterMesh(XMFLOAT3* pPathPoints, int nPoints, float fWidth = 4.0f);
+        virtual ~CRollerCoasterMesh() { }
 };

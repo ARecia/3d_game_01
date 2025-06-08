@@ -131,9 +131,10 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 	case WM_KEYDOWN:
 		switch (wParam)
 		{
-		case VK_ESCAPE:
-			::PostQuitMessage(0);
-			break;
+                case VK_ESCAPE:
+                        if (dynamic_cast<CSceneMenu*>(m_pScene) != nullptr)
+                                ::PostQuitMessage(0);
+                        break;
 		case VK_RETURN:
 			break;
 		case VK_CONTROL:
