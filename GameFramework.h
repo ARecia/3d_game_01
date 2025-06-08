@@ -26,6 +26,10 @@ private:
 	CScene*						m_pScene = NULL;
 	CGameObject*				m_pLockedObject = NULL;
 
+        bool                                            m_bAutoAttack = false;
+        bool                                            m_bShield = false;
+        float                                           m_fAutoAttackTime = 0.0f;
+
 	CGameTimer					m_GameTimer;
 
 	POINT						m_ptOldCursorPos;

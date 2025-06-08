@@ -140,8 +140,16 @@ public:
 class CAxisObject : public CGameObject
 {
 public:
-	CAxisObject() { }
-	virtual ~CAxisObject() { }
+        CAxisObject() { }
+        virtual ~CAxisObject() { }
 
-	virtual void Render(HDC hDCFrameBuffer, CCamera* pCamera);
+        virtual void Render(HDC hDCFrameBuffer, CCamera* pCamera);
+};
+
+class CTankObject : public CExplosiveObject
+{
+public:
+        bool m_bDestroyed = false;
+
+        virtual void Animate(float fElapsedTime) override;
 };

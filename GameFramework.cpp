@@ -128,23 +128,29 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 
 	switch (nMessageID)
 	{
-	case WM_KEYDOWN:
-		switch (wParam)
-		{
-		case VK_ESCAPE:
-			::PostQuitMessage(0);
-			break;
-		case VK_RETURN:
-			break;
-		case VK_CONTROL:
-			((CAirplanePlayer*)m_pPlayer)->FireBullet(m_pLockedObject);
-			m_pLockedObject = NULL;
-			break;
-		default:
-			m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
-			break;
-		}
-		break;
+       case WM_KEYDOWN:
+               switch (wParam)
+               {
+               case VK_ESCAPE:
+                       m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+                       break;
+               case VK_RETURN:
+                       break;
+               case VK_CONTROL:
+                       ((CAirplanePlayer*)m_pPlayer)->FireBullet(m_pLockedObject);
+                       m_pLockedObject = NULL;
+                       break;
+               case 'A':
+                       m_bAutoAttack = !m_bAutoAttack;
+                       break;
+               case 'S':
+                       m_bShield = !m_bShield;
+                       break;
+               default:
+                       m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+                       break;
+               }
+               break;
 	default:
 		break;
 	}
@@ -184,13 +190,13 @@ void CGameFramework::ProcessInput()
 	static UCHAR pKeyBuffer[256];
 	if (GetKeyboardState(pKeyBuffer))
 	{
-		DWORD dwDirection = 0;
-		if (pKeyBuffer[VK_UP] & 0xF0) dwDirection |= DIR_FORWARD;
-		if (pKeyBuffer[VK_DOWN] & 0xF0) dwDirection |= DIR_BACKWARD;
-		if (pKeyBuffer[VK_LEFT] & 0xF0) dwDirection |= DIR_LEFT;
-		if (pKeyBuffer[VK_RIGHT] & 0xF0) dwDirection |= DIR_RIGHT;
-		if (pKeyBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
-		if (pKeyBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
+               DWORD dwDirection = 0;
+               if (pKeyBuffer[VK_UP] & 0xF0 || pKeyBuffer['W'] & 0xF0) dwDirection |= DIR_FORWARD;
+               if (pKeyBuffer[VK_DOWN] & 0xF0 || pKeyBuffer['S'] & 0xF0) dwDirection |= DIR_BACKWARD;
+               if (pKeyBuffer[VK_LEFT] & 0xF0 || pKeyBuffer['A'] & 0xF0) dwDirection |= DIR_LEFT;
+               if (pKeyBuffer[VK_RIGHT] & 0xF0 || pKeyBuffer['D'] & 0xF0) dwDirection |= DIR_RIGHT;
+               if (pKeyBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
+               if (pKeyBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
 
 		if (dwDirection) m_pPlayer->Move(dwDirection, 0.15f);
 	}
@@ -213,7 +219,17 @@ void CGameFramework::ProcessInput()
 	}
 
 
-	m_pPlayer->Update(m_GameTimer.GetTimeElapsed());
+       if (m_bAutoAttack)
+       {
+               m_fAutoAttackTime += m_GameTimer.GetTimeElapsed();
+               if (m_fAutoAttackTime > 0.3f)
+               {
+                       ((CAirplanePlayer*)m_pPlayer)->FireBullet(m_pLockedObject);
+                       m_fAutoAttackTime = 0.0f;
+               }
+       }
+
+       m_pPlayer->Update(m_GameTimer.GetTimeElapsed());
 }
 
 void CGameFramework::AnimateObjects()
@@ -262,9 +278,9 @@ void CGameFramework::FrameAdvance()
 	}
 
 	// 3. Level-1 → Level-2 전환
-	if (dynamic_cast<CSceneStage1*>(m_pScene) != nullptr)
-	{
-		CSceneStage1* pStage1 = static_cast<CSceneStage1*>(m_pScene);
+        if (dynamic_cast<CSceneStage1*>(m_pScene) != nullptr)
+        {
+                CSceneStage1* pStage1 = static_cast<CSceneStage1*>(m_pScene);
 
 		if (pStage1->IsFinished())
 		{
@@ -279,8 +295,22 @@ void CGameFramework::FrameAdvance()
 			delete m_pScene;
 			m_pScene = new CSceneMenu(m_pPlayer);
 			m_pScene->BuildObjects();
-		}
-	}
+                }
+        }
+
+        // 4. Level-2 → Menu 전환
+        if (dynamic_cast<CSceneStage2*>(m_pScene) != nullptr)
+        {
+                CSceneStage2* pStage2 = static_cast<CSceneStage2*>(m_pScene);
+
+                if (pStage2->GoToMenu())
+                {
+                        m_pScene->ReleaseObjects();
+                        delete m_pScene;
+                        m_pScene = new CSceneMenu(m_pPlayer);
+                        m_pScene->BuildObjects();
+                }
+        }
 
 
 	// ✅ 그다음 렌더링 결과 표시
