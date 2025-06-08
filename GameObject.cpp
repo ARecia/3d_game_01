@@ -359,8 +359,15 @@ void CBulletObject::Animate(float fElapsedTime)
 //
 void CAxisObject::Render(HDC hDCFrameBuffer, CCamera* pCamera)
 {
-	CGraphicsPipeline::SetWorldTransform(&m_xmf4x4World);
+        CGraphicsPipeline::SetWorldTransform(&m_xmf4x4World);
 
-	m_pMesh->Render(hDCFrameBuffer);
+        m_pMesh->Render(hDCFrameBuffer);
+}
+
+void CTankObject::Animate(float fElapsedTime)
+{
+        bool bPrevBlowing = m_bBlowingUp;
+        CExplosiveObject::Animate(fElapsedTime);
+        if (bPrevBlowing && !m_bBlowingUp) m_bDestroyed = true;
 }
 
