@@ -137,9 +137,12 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
                case VK_RETURN:
                        break;
                case VK_CONTROL:
-                       ((CAirplanePlayer*)m_pPlayer)->FireBullet(m_pLockedObject);
+               {
+                       CAirplanePlayer* pAir = dynamic_cast<CAirplanePlayer*>(m_pPlayer);
+                       if (pAir) pAir->FireBullet(m_pLockedObject);
                        m_pLockedObject = NULL;
                        break;
+               }
                case 'A':
                        m_bAutoAttack = !m_bAutoAttack;
                        break;
@@ -198,7 +201,13 @@ void CGameFramework::ProcessInput()
                if (pKeyBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
                if (pKeyBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
 
-		if (dwDirection) m_pPlayer->Move(dwDirection, 0.15f);
+                if (dwDirection)
+                {
+                        if (CTankPlayer* pTank = dynamic_cast<CTankPlayer*>(m_pPlayer))
+                                pTank->Move(dwDirection, 0.15f);
+                        else
+                                m_pPlayer->Move(dwDirection, 0.15f);
+                }
 	}
 
 	if (GetCapture() == m_hWnd)
@@ -224,7 +233,8 @@ void CGameFramework::ProcessInput()
                m_fAutoAttackTime += m_GameTimer.GetTimeElapsed();
                if (m_fAutoAttackTime > 0.3f)
                {
-                       ((CAirplanePlayer*)m_pPlayer)->FireBullet(m_pLockedObject);
+                       CAirplanePlayer* pAir = dynamic_cast<CAirplanePlayer*>(m_pPlayer);
+                       if (pAir) pAir->FireBullet(m_pLockedObject);
                        m_fAutoAttackTime = 0.0f;
                }
        }
@@ -282,13 +292,24 @@ void CGameFramework::FrameAdvance()
         {
                 CSceneStage1* pStage1 = static_cast<CSceneStage1*>(m_pScene);
 
-		if (pStage1->IsFinished())
-		{
-			m_pScene->ReleaseObjects();
-			delete m_pScene;
-			m_pScene = new CSceneStage2(m_pPlayer);
-			m_pScene->BuildObjects();
-		}
+               if (pStage1->IsFinished())
+               {
+                        m_pScene->ReleaseObjects();
+                        delete m_pScene;
+
+                        CCamera* pCamera = m_pPlayer->GetCamera();
+                        delete m_pPlayer;
+                        m_pPlayer = new CTankPlayer();
+                        m_pPlayer->SetPosition(0.0f, 0.0f, 0.0f);
+                        CCubeMesh* pTankMesh = new CCubeMesh(6.0f, 3.0f, 8.0f);
+                        m_pPlayer->SetMesh(pTankMesh);
+                        m_pPlayer->SetColor(RGB(0, 128, 0));
+                        m_pPlayer->SetCamera(pCamera);
+                        m_pPlayer->SetCameraOffset(XMFLOAT3(0.0f, 5.0f, -15.0f));
+
+                        m_pScene = new CSceneStage2(m_pPlayer);
+                        m_pScene->BuildObjects();
+               }
 		else if (pStage1->GoToMenu())
 		{
 			m_pScene->ReleaseObjects();
