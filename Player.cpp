@@ -191,8 +191,37 @@ void CAirplanePlayer::FireBullet(CGameObject* pLockedObject)
 		{
 			pBulletObject = m_ppBullets[i];
 			break;
-		}
-	}
+        }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
+CTankPlayer::CTankPlayer()
+{
+}
+
+void CTankPlayer::Move(DWORD dwDirection, float fDistance)
+{
+        float fRotation = 0.0f;
+        if (dwDirection & DIR_LEFT) fRotation -= 60.0f * fDistance;
+        if (dwDirection & DIR_RIGHT) fRotation += 60.0f * fDistance;
+        if (fRotation != 0.0f) Rotate(0.0f, fRotation, 0.0f);
+
+        XMFLOAT3 xmf3Shift(0.0f, 0.0f, 0.0f);
+        if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, fDistance);
+        if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, -fDistance);
+        if (dwDirection & DIR_UP) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Up, fDistance);
+        if (dwDirection & DIR_DOWN) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Up, -fDistance);
+
+        if (xmf3Shift.x != 0.0f || xmf3Shift.y != 0.0f || xmf3Shift.z != 0.0f)
+                CPlayer::Move(xmf3Shift, true);
+}
+
+void CTankPlayer::OnUpdateTransform()
+{
+        CPlayer::OnUpdateTransform();
+}
+
 
 	if (pBulletObject)
 	{
