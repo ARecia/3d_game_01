@@ -55,6 +55,9 @@ public:
 	void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 	LRESULT CALLBACK OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
-	void SetActive(bool bActive) { m_bActive = bActive; }
+        void SetActive(bool bActive) { m_bActive = bActive; }
+        bool IsShieldActive() const { return m_bShield; }
 };
+
+extern CGameFramework gGameFramework;
 

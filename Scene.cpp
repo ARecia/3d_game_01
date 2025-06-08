@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Scene.h"
 #include "GraphicsPipeline.h"
+#include "GameFramework.h"
 
 CScene::CScene(CPlayer* pPlayer)
 {
@@ -308,6 +309,7 @@ void CScene::CheckPlayerByWallCollision()
 void CScene::CheckObjectByBulletCollisions()
 {
 	CBulletObject** ppBullets = ((CAirplanePlayer*)m_pPlayer)->m_ppBullets;
+    if (gGameFramework.IsShieldActive()) return;
 	for (int i = 0; i < m_nObjects; i++)
 	{
 		for (int j = 0; j < BULLETS; j++)
@@ -324,7 +326,7 @@ void CScene::CheckObjectByBulletCollisions()
 
 void CScene::Animate(float fElapsedTime)
 {
-	if (m_pWallsObject) // ? nullÀÏ ¶§ È£Ãâ ¹æÁö
+	if (m_pWallsObject) // ? nullÃ€Ã Â¶Â§ ÃˆÂ£ÃƒÃ¢ Â¹Ã¦ÃÃ¶
 		m_pWallsObject->Animate(fElapsedTime);
 
 	if (m_ppObjects)
